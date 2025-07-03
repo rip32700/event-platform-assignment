@@ -17,7 +17,7 @@ model Event {
   datetime         DateTime
   location         String
   capacity         Int
-  price_per_person Decimal  @db.Decimal(10, 2)
+  price_per_person Int // Normalized price in cents (e.g., 1050 = $10.50)
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
 
