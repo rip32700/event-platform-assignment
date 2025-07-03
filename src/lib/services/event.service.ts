@@ -1,5 +1,5 @@
 import { eventRepository } from '@/lib/repositories/event.repository'
-import { CreateEventData, EventWithPagination, PaginationOptions, UpdateEventData } from '@/lib/types/event.types'
+import { CreateEventData, EventWithPagination, PaginationOptions, SearchOptions, UpdateEventData } from '@/lib/types/event.types'
 import { Event } from '@prisma/client'
 
 export class EventService {
@@ -15,6 +15,26 @@ export class EventService {
         const { page = 1, limit = 10 } = pagination
 
         const { events, total } = await eventRepository.findMany(pagination)
+
+        const totalPages = Math.ceil(total / limit)
+        const hasNext = page < totalPages
+        const hasPrev = page > 1
+
+        return {
+            events,
+            total,
+            page,
+            limit,
+            totalPages,
+            hasNext,
+            hasPrev,
+        }
+    }
+
+    async searchEvents(searchOptions: SearchOptions = {}): Promise<EventWithPagination> {
+        const { page = 1, limit = 10 } = searchOptions
+
+        const { events, total } = await eventRepository.search(searchOptions)
 
         const totalPages = Math.ceil(total / limit)
         const hasNext = page < totalPages

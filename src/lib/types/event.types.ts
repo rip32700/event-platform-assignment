@@ -10,6 +10,16 @@ export interface PaginationOptions {
     limit?: number
 }
 
+// Search options for event search
+export interface SearchOptions extends PaginationOptions {
+    q?: string
+    location?: string
+    dateFrom?: string
+    dateTo?: string
+    minPrice?: number
+    maxPrice?: number
+}
+
 // Service layer types
 export interface EventWithPagination {
     events: Event[]

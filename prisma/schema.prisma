@@ -21,5 +21,13 @@ model Event {
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
 
+  // Single column indexes for search filters
+  @@index([datetime])
+  @@index([price_per_person])
+  @@index([created_at])
+  @@index([location])
+  @@index([title])
+  // Composite indexes for common search combinations
+  @@index([datetime, price_per_person])
   @@map("events")
 }
