@@ -26,7 +26,14 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
         const result = UpdateEventSchema.safeParse(body)
         if (!result.success) {
-            return NextResponse.json({ error: 'Validation failed', details: result.error.errors }, { status: HttpStatus.BAD_REQUEST })
+            const errorCount = result.error.errors.length
+            return NextResponse.json(
+                {
+                    error: `Validation failed: ${errorCount} error${errorCount > 1 ? 's' : ''} found`,
+                    details: result.error.errors,
+                },
+                { status: HttpStatus.BAD_REQUEST }
+            )
         }
 
         const event = await eventService.updateEvent(id, result.data)

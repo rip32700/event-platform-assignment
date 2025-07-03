@@ -15,8 +15,6 @@ export async function GET(request: NextRequest) {
             dateTo: searchParams.get('dateTo') || undefined,
             minPrice: searchParams.get('minPrice') || undefined,
             maxPrice: searchParams.get('maxPrice') || undefined,
-            page: searchParams.get('page') || undefined,
-            limit: searchParams.get('limit') || undefined,
         }
 
         // Validate search parameters
@@ -28,10 +26,7 @@ export async function GET(request: NextRequest) {
         // Perform search
         const events = await eventService.searchEvents(result.data)
 
-        return NextResponse.json({
-            ...events,
-            searchQuery: result.data, // Include search parameters in response for debugging
-        })
+        return NextResponse.json(events)
     } catch (error) {
         console.error('Error searching events:', error)
         return NextResponse.json({ error: 'Failed to search events' }, { status: HttpStatus.INTERNAL_SERVER_ERROR })

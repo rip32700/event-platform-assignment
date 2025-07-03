@@ -1,62 +1,51 @@
+import { EventDTO } from '@/lib/dto/event.dto'
 import { eventRepository } from '@/lib/repositories/event.repository'
-import { CreateEventData, EventWithPagination, PaginationOptions, SearchOptions, UpdateEventData } from '@/lib/types/event.types'
+import { CreateEventData, SearchOptions, UpdateEventData } from '@/lib/types/event.types'
 import { Event } from '@prisma/client'
 
+// Map Prisma Event to EventDTO (snake_case to camelCase)
+function mapEventToDTO(event: Event): EventDTO {
+    return {
+        id: event.id,
+        title: event.title,
+        description: event.description || undefined,
+        datetime: event.datetime.toISOString(),
+        location: event.location,
+        capacity: event.capacity,
+        pricePerPerson: event.price_per_person,
+        createdAt: event.created_at.toISOString(),
+    }
+}
+
 export class EventService {
-    async createEvent(data: CreateEventData): Promise<Event> {
-        return eventRepository.create(data)
+    async createEvent(data: CreateEventData): Promise<EventDTO> {
+        const event = await eventRepository.create(data)
+        return mapEventToDTO(event)
     }
 
-    async getEventById(id: string): Promise<Event | null> {
-        return eventRepository.findById(id)
+    async getEventById(id: string): Promise<EventDTO | null> {
+        const event = await eventRepository.findById(id)
+        return event ? mapEventToDTO(event) : null
     }
 
-    async getEvents(pagination: PaginationOptions = {}): Promise<EventWithPagination> {
-        const { page = 1, limit = 10 } = pagination
-
-        const { events, total } = await eventRepository.findMany(pagination)
-
-        const totalPages = Math.ceil(total / limit)
-        const hasNext = page < totalPages
-        const hasPrev = page > 1
-
-        return {
-            events,
-            total,
-            page,
-            limit,
-            totalPages,
-            hasNext,
-            hasPrev,
-        }
+    async getEvents(): Promise<EventDTO[]> {
+        const events = await eventRepository.findMany()
+        return events.map(mapEventToDTO)
     }
 
-    async searchEvents(searchOptions: SearchOptions = {}): Promise<EventWithPagination> {
-        const { page = 1, limit = 10 } = searchOptions
-
-        const { events, total } = await eventRepository.search(searchOptions)
-
-        const totalPages = Math.ceil(total / limit)
-        const hasNext = page < totalPages
-        const hasPrev = page > 1
-
-        return {
-            events,
-            total,
-            page,
-            limit,
-            totalPages,
-            hasNext,
-            hasPrev,
-        }
+    async searchEvents(searchOptions: SearchOptions = {}): Promise<EventDTO[]> {
+        const events = await eventRepository.search(searchOptions)
+        return events.map(mapEventToDTO)
     }
 
-    async updateEvent(id: string, data: UpdateEventData): Promise<Event> {
-        return eventRepository.update(id, data)
+    async updateEvent(id: string, data: UpdateEventData): Promise<EventDTO> {
+        const event = await eventRepository.update(id, data)
+        return mapEventToDTO(event)
     }
 
-    async deleteEvent(id: string): Promise<Event> {
-        return eventRepository.delete(id)
+    async deleteEvent(id: string): Promise<EventDTO> {
+        const event = await eventRepository.delete(id)
+        return mapEventToDTO(event)
     }
 }
 

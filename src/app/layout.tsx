@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
+import { Toaster } from 'sonner'
 import './globals.css'
 
 export const metadata: Metadata = {
-    title: 'Hello World App',
-    description: 'A simple NextJS 15 hello world application',
+    title: 'Event Platform',
+    description: 'Discover and join amazing events',
 }
 
 export default function RootLayout({
@@ -13,7 +14,10 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className="antialiased">{children}</body>
+            <body className="antialiased">
+                {children}
+                <Toaster position="top-right" />
+            </body>
         </html>
     )
 }

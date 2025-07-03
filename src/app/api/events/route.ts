@@ -1,22 +1,11 @@
 import { HttpStatus } from '@/lib/constants/http-status'
-import { CreateEventSchema, PaginationSchema } from '@/lib/schemas/event.schemas'
+import { CreateEventSchema } from '@/lib/schemas/event.schemas'
 import { eventService } from '@/lib/services/event.service'
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
     try {
-        const searchParams = request.nextUrl.searchParams
-
-        const result = PaginationSchema.safeParse({
-            page: searchParams.get('page'),
-            limit: searchParams.get('limit'),
-        })
-
-        if (!result.success) {
-            return NextResponse.json({ error: 'Validation failed', details: result.error.errors }, { status: HttpStatus.BAD_REQUEST })
-        }
-
-        const events = await eventService.getEvents(result.data)
+        const events = await eventService.getEvents()
         return NextResponse.json(events)
     } catch (error) {
         console.error('Error fetching events:', error)
@@ -30,7 +19,14 @@ export async function POST(request: NextRequest) {
 
         const result = CreateEventSchema.safeParse(body)
         if (!result.success) {
-            return NextResponse.json({ error: 'Validation failed', details: result.error.errors }, { status: HttpStatus.BAD_REQUEST })
+            const errorCount = result.error.errors.length
+            return NextResponse.json(
+                {
+                    error: `Validation failed: ${errorCount} error${errorCount > 1 ? 's' : ''} found`,
+                    details: result.error.errors,
+                },
+                { status: HttpStatus.BAD_REQUEST }
+            )
         }
 
         const event = await eventService.createEvent(result.data)

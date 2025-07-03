@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { CreateEventData, PaginationOptions, SearchOptions, UpdateEventData } from '@/lib/types/event.types'
+import { CreateEventData, SearchOptions, UpdateEventData } from '@/lib/types/event.types'
 import { Event, Prisma } from '@prisma/client'
 
 export class EventRepository {
@@ -10,30 +10,17 @@ export class EventRepository {
     }
 
     async findById(id: string): Promise<Event | null> {
-        return prisma.event.findUnique({
-            where: { id },
+        return prisma.event.findUnique({ where: { id } })
+    }
+
+    async findMany(): Promise<Event[]> {
+        return prisma.event.findMany({
+            orderBy: { created_at: 'desc' },
         })
     }
 
-    async findMany(pagination: PaginationOptions = {}): Promise<{ events: Event[]; total: number }> {
-        const { page = 1, limit = 10 } = pagination
-        const skip = (page - 1) * limit
-
-        const [events, total] = await Promise.all([
-            prisma.event.findMany({
-                skip,
-                take: limit,
-                orderBy: { created_at: 'desc' },
-            }),
-            prisma.event.count(),
-        ])
-
-        return { events, total }
-    }
-
-    async search(options: SearchOptions = {}): Promise<{ events: Event[]; total: number }> {
-        const { q, location, dateFrom, dateTo, minPrice, maxPrice, page = 1, limit = 10 } = options
-        const skip = (page - 1) * limit
+    async search(options: SearchOptions = {}): Promise<Event[]> {
+        const { q, location, dateFrom, dateTo, minPrice, maxPrice } = options
 
         // Build where clause dynamically
         const where: Prisma.EventWhereInput = {}
@@ -70,30 +57,18 @@ export class EventRepository {
             }
         }
 
-        const [events, total] = await Promise.all([
-            prisma.event.findMany({
-                where,
-                skip,
-                take: limit,
-                orderBy: { datetime: 'asc' }, // Order by event date for search results
-            }),
-            prisma.event.count({ where }),
-        ])
-
-        return { events, total }
+        return prisma.event.findMany({
+            where,
+            orderBy: { datetime: 'asc' }, // Order by event date for search results
+        })
     }
 
     async update(id: string, data: UpdateEventData): Promise<Event> {
-        return prisma.event.update({
-            where: { id },
-            data,
-        })
+        return prisma.event.update({ where: { id }, data })
     }
 
     async delete(id: string): Promise<Event> {
-        return prisma.event.delete({
-            where: { id },
-        })
+        return prisma.event.delete({ where: { id } })
     }
 }
 

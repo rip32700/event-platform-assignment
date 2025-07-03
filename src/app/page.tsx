@@ -1,10 +1,5 @@
-import { Button } from '@/components/ui/button'
+import { redirect } from 'next/navigation'
 
-export default function Home() {
-    return (
-        <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-            <h1 className="text-4xl font-bold">Hello World</h1>
-            <Button>Click me!</Button>
-        </div>
-    )
+export default function HomePage() {
+    redirect('/events')
 }
