@@ -204,13 +204,13 @@ export default function EventForm({ event, onSuccess, onCancel }: EventFormProps
                         </div>
                     </div>
 
-                    {/* Submit Button */}
+                    {/* Form Buttons */}
                     <div className="flex gap-4 pt-4">
-                        <Button type="submit" disabled={isSubmitting} className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90">
-                            {isSubmitting ? `${isEditing ? 'Updating' : 'Creating'} Event...` : `${isEditing ? 'Update' : 'Create'} Event`}
-                        </Button>
                         <Button type="button" variant="outline" onClick={onCancel} className="flex-1 border-input text-foreground hover:bg-accent">
                             Cancel
+                        </Button>
+                        <Button type="submit" disabled={isSubmitting} className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90">
+                            {isSubmitting ? `${isEditing ? 'Updating' : 'Creating'} Event...` : `${isEditing ? 'Update' : 'Create'} Event`}
                         </Button>
                     </div>
                 </form>
